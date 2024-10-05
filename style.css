@@ -1,0 +1,46 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.current-weather {
+    margin: 20px 0;
+    padding: 15px;
+    background: #e3e3e3;
+    border-radius: 8px;
+}
+
+.weather-details h3, .weather-details p {
+    margin: 5px 0;
+}
+
+.forecast-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.forecast-item {
+    width: 150px;
+    padding: 10px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.forecast-item img {
+    width: 50px;
+    margin: 10px 0;
+}
