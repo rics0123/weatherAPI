@@ -19,6 +19,49 @@ async function getCurrentWeather(lat, lon) {
     }
 }
 
+// Function to get weather data by city name
+async function getWeatherByCity(city) {
+    const url = `${CURRENT_WEATHER_URL}?q=${city}&units=metric&appid=${API_KEY}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        displayCurrentWeather(data); // Display the current weather data
+        getThreeHourForecastByCity(city); // Fetch and display 3-hour forecast data
+    } catch (error) {
+        console.error('Error fetching weather data by city:', error.message);
+        alert('Failed to fetch weather data for the entered city. Please try again.');
+    }
+}
+
+// Function to get 3-hour forecast data by city name
+async function getThreeHourForecastByCity(city) {
+    const url = `${FORECAST_URL}?q=${city}&units=metric&appid=${API_KEY}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        displayThreeHourForecast(data); // Display the 3-hour forecast
+    } catch (error) {
+        console.error('Error fetching 3-hour forecast data by city:', error.message);
+        alert('Failed to fetch 3-hour forecast data for the entered city. Please try again.');
+    }
+}
+
+// Event listener for search button click
+document.getElementById('search-btn').addEventListener('click', () => {
+    const city = document.getElementById('location-input').value.trim();
+    if (city) {
+        getWeatherByCity(city); // Fetch weather data based on city name
+    } else {
+        alert('Please enter a valid city name.');
+    }
+});
+
 // Function to display current weather details
 function displayCurrentWeather(data) {
     const cityName = data.name;
@@ -56,19 +99,16 @@ async function getThreeHourForecast(lat, lon) {
     }
 }
 
-// Function to display 3-hour forecast details (show only specific times of the day)
+// Function to display 3-hour forecast details (limit to first 6 entries)
 function displayThreeHourForecast(data) {
     const forecastContainer = document.getElementById('forecast-container');
     forecastContainer.innerHTML = ''; // Clear previous data
 
-    // Filter forecasts to show only one entry per day at 12:00 PM (midday)
-    const filteredForecasts = data.list.filter((forecast) => {
-        const forecastTime = new Date(forecast.dt * 1000).getHours();
-        return forecastTime === 12; // Show only forecasts at 12:00 PM
-    });
+    // Get only the first 6 entries from the forecast list
+    const limitedForecasts = data.list.slice(0, 6);
 
-    // Iterate over the filtered forecasts and display relevant information
-    filteredForecasts.forEach((forecast) => {
+    // Iterate over the limited forecasts and display relevant information
+    limitedForecasts.forEach((forecast) => {
         const forecastElement = document.createElement('div');
         forecastElement.classList.add('forecast-item');
 
@@ -87,6 +127,8 @@ function displayThreeHourForecast(data) {
         forecastContainer.appendChild(forecastElement);
     });
 }
+
+
 
 // Get the weather icon URL
 function getWeatherIcon(icon) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="3-Hour Weather Forecast and Current Weather">
+    <meta name="description" content="3-Hour Weather Forecast">
     <meta name="keywords" content="Weather, OpenWeatherMap, Forecast, JavaScript">
     <meta name="author" content="Omair Malic">
     <title>3-Hour Weather Forecast</title>
@@ -12,6 +12,12 @@
 </head>
 <body>
     <div class="container">
+        <!-- Location Search -->
+        <div class="location-search">
+            <input type="text" id="location-input" placeholder="Enter a city name...">
+            <button id="search-btn">Search</button>
+        </div>
+
         <!-- Current Weather and Location -->
         <div class="current-weather">
             <div class="weather-details">
@@ -26,4 +32,5 @@
         </div>
     </div>
 </body>
+
 </html>

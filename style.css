@@ -32,8 +32,8 @@ body, html {
 }
 
 .forecast-item {
-    width: 150px;
-    padding: 10px;
+    width: 200px;
+    padding: 15px;
     background: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
