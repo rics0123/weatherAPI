@@ -1,3 +1,4 @@
+/* General body and container styles */
 body, html {
     margin: 0;
     padding: 0;
@@ -12,6 +13,7 @@ body, html {
     padding: 20px;
 }
 
+/* Weather details and forecast container */
 .current-weather {
     margin: 20px 0;
     padding: 15px;
@@ -26,14 +28,14 @@ body, html {
 .forecast-container {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-top: 20px;
 }
 
 .forecast-item {
-    width: 200px;
-    padding: 15px;
+    width: 150px;
+    padding: 10px;
     background: #ffffff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -41,6 +43,42 @@ body, html {
 }
 
 .forecast-item img {
-    width: 50px;
-    margin: 10px 0;
+    width: 40px;
+    margin: 5px 0;
+}
+
+/* OpenStreetMap */
+#map {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Location Search Bar */
+.location-search {
+    margin: 20px 0;
+}
+
+#location-input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+}
+
+#search-btn {
+    padding: 10px 20px;
+    border: none;
+    background: #28a745;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+#search-btn:hover {
+    background: #218838;
 }

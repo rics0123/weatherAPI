@@ -3,6 +3,20 @@ const API_KEY = 'b1874e8463abeeb77801729dc9ce5eac';
 const CURRENT_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
+// Initialize Leaflet Map
+let map;
+function initializeMap(lat, lon) {
+    if (map) {
+        map.setView([lat, lon], 12);
+    } else {
+        map = L.map('map').setView([lat, lon], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+    }
+}
+
 // Function to get current weather data
 async function getCurrentWeather(lat, lon) {
     const url = `${CURRENT_WEATHER_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
@@ -12,7 +26,8 @@ async function getCurrentWeather(lat, lon) {
             throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
         const data = await response.json();
-        displayCurrentWeather(data); // Display the current weather data in the location container
+        displayCurrentWeather(data); // Display the current weather data
+        initializeMap(lat, lon); // Initialize map with location
     } catch (error) {
         console.error('Error fetching current weather data:', error.message);
         alert('Failed to fetch current weather data. Please check the console for more details.');
@@ -29,12 +44,19 @@ async function getWeatherByCity(city) {
         }
         const data = await response.json();
         displayCurrentWeather(data); // Display the current weather data
+        const lat = data.coord.lat;
+        const lon = data.coord.lon;
+        initializeMap(lat, lon); // Update map with new city coordinates
         getThreeHourForecastByCity(city); // Fetch and display 3-hour forecast data
     } catch (error) {
         console.error('Error fetching weather data by city:', error.message);
         alert('Failed to fetch weather data for the entered city. Please try again.');
     }
 }
+
+// Function to initialize map on load with default coordinates
+initializeMap(14.6604, 121.1171); // Coordinates for initial view (e.g., Marikina)
+
 
 // Function to get 3-hour forecast data by city name
 async function getThreeHourForecastByCity(city) {
