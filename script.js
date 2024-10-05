@@ -1,112 +1,93 @@
-// API Key and URLs for the APIs
 const API_KEY = 'b1874e8463abeeb77801729dc9ce5eac';
 const CURRENT_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+const windLayerUrl = `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`; // Wind pressure overlay
 
-// URL for wind layer (example using OpenWeatherMap wind_new layer)
-const windLayerUrl = `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`;
-
-// Initialize Leaflet Map
+// Initialize Leaflet map
 let map;
 function initializeMap(lat, lon) {
     if (map) {
         map.setView([lat, lon], 12);
     } else {
         map = L.map('map').setView([lat, lon], 12);
-        
-        // Add OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-        // Add wind_nw layer to the map
-        L.tileLayer(windLayerUrl, {
-            opacity: 0.5, // Adjust transparency as needed
-            attribution: '© OpenWeatherMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+        L.tileLayer(windLayerUrl, { opacity: 0.5, attribution: '© OpenWeatherMap' }).addTo(map);
     }
 }
 
-// Function to get current weather data
+// Fetch current weather data
 async function getCurrentWeather(lat, lon) {
     const url = `${CURRENT_WEATHER_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status} - ${response.statusText}`);
         const data = await response.json();
-        displayCurrentWeather(data); // Display the current weather data
-        initializeMap(lat, lon); // Initialize map with location
+        displayCurrentWeather(data);
+        initializeMap(lat, lon);
     } catch (error) {
         console.error('Error fetching current weather data:', error.message);
-        alert('Failed to fetch current weather data. Please check the console for more details.');
+        alert('Failed to fetch current weather data.');
     }
 }
 
-// Add event listener to trigger search on pressing "Enter"
-document.getElementById('location-input').addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        const city = document.getElementById('location-input').value.trim();
-        if (city) {
-            getWeatherByCity(city); // Fetch weather data based on city name
-        } else {
-            alert('Please enter a valid city name.');
-        }
-    }
-});
-
-// Function to get weather data by city name
+// Fetch weather data by city name
 async function getWeatherByCity(city) {
     const url = `${CURRENT_WEATHER_URL}?q=${city}&units=metric&appid=${API_KEY}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status} - ${response.statusText}`);
         const data = await response.json();
-        displayCurrentWeather(data); // Display the current weather data
-        const lat = data.coord.lat;
-        const lon = data.coord.lon;
-        initializeMap(lat, lon); // Update map with new city coordinates
-        getThreeHourForecastByCity(city); // Fetch and display 3-hour forecast data
+        displayCurrentWeather(data);
+        const { lat, lon } = data.coord;
+        initializeMap(lat, lon);
+        getThreeHourForecastByCity(city);
     } catch (error) {
         console.error('Error fetching weather data by city:', error.message);
-        alert('Failed to fetch weather data for the entered city. Please try again.');
+        alert('Failed to fetch weather data for the entered city.');
     }
 }
 
-// Function to initialize map on load with default coordinates
-initializeMap(14.6604, 121.1171); // Coordinates for initial view (e.g., Marikina)
+// Initialize map on page load
+initializeMap(14.6604, 121.1171); // Default coordinates (e.g., Marikina)
 
-// Function to get 3-hour forecast data by city name
+// Fetch 3-hour forecast data by city name
 async function getThreeHourForecastByCity(city) {
     const url = `${FORECAST_URL}?q=${city}&units=metric&appid=${API_KEY}`;
     try {
         const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status} - ${response.statusText}`);
         const data = await response.json();
-        displayThreeHourForecast(data); // Display the 3-hour forecast
+        displayThreeHourForecast(data);
     } catch (error) {
-        console.error('Error fetching 3-hour forecast data by city:', error.message);
-        alert('Failed to fetch 3-hour forecast data for the entered city. Please try again.');
+        console.error('Error fetching 3-hour forecast data:', error.message);
+        alert('Failed to fetch 3-hour forecast data.');
     }
 }
 
-// Event listener for search button click
-document.getElementById('search-btn').addEventListener('click', () => {
-    const city = document.getElementById('location-input').value.trim();
-    if (city) {
-        getWeatherByCity(city); // Fetch weather data based on city name
-    } else {
-        alert('Please enter a valid city name.');
+// Trigger search on Enter key press
+document.getElementById('location-input').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        const city = document.getElementById('location-input').value.trim();
+        if (city) getWeatherByCity(city);
+        else alert('Please enter a valid city name.');
     }
 });
 
-// Function to display current weather details
+// Fetch and display 3-hour forecast data
+async function getThreeHourForecast(lat, lon) {
+    const url = `${FORECAST_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        const data = await response.json();
+        displayThreeHourForecast(data);
+    } catch (error) {
+        console.error('Error fetching 3-hour forecast data:', error.message);
+        alert('Failed to fetch 3-hour forecast data.');
+    }
+}
+
+// Display current weather details
 function displayCurrentWeather(data) {
     const cityName = data.name;
     const countryName = data.sys.country;
@@ -116,7 +97,6 @@ function displayCurrentWeather(data) {
     const windSpeed = data.wind.speed;
     const icon = getWeatherIcon(data.weather[0].icon);
 
-    // Display city name, country, and current weather information in the location container
     document.getElementById('location').innerHTML = `
         <strong>${cityName}, ${countryName}</strong><br>
         <img src="${icon}" alt="Weather Icon" style="vertical-align: middle; width: 50px;">
@@ -127,36 +107,16 @@ function displayCurrentWeather(data) {
     `;
 }
 
-// Function to get 3-hour weather forecast data
-async function getThreeHourForecast(lat, lon) {
-    const url = `${FORECAST_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status} - ${response.statusText}`);
-        }
-        const data = await response.json();
-        displayThreeHourForecast(data);
-    } catch (error) {
-        console.error('Error fetching 3-hour forecast data:', error.message);
-        alert('Failed to fetch 3-hour forecast data. Please check the console for more details.');
-    }
-}
-
-// Function to display 3-hour forecast details (limit to first 6 entries)
+// Display 3-hour forecast (first 6 entries)
 function displayThreeHourForecast(data) {
     const forecastContainer = document.getElementById('forecast-container');
-    forecastContainer.innerHTML = ''; // Clear previous data
-
-    // Get only the first 6 entries from the forecast list
+    forecastContainer.innerHTML = '';
     const limitedForecasts = data.list.slice(0, 6);
 
-    // Iterate over the limited forecasts and display relevant information
     limitedForecasts.forEach((forecast) => {
         const forecastElement = document.createElement('div');
         forecastElement.classList.add('forecast-item');
 
-        // Extract and format forecast data
         const forecastTime = new Date(forecast.dt * 1000).toLocaleString();
         const temp = forecast.main.temp;
         const weatherDescription = forecast.weather[0].description;
@@ -172,37 +132,30 @@ function displayThreeHourForecast(data) {
     });
 }
 
-// Get the weather icon URL
+// Get weather icon URL
 function getWeatherIcon(icon) {
     return `http://openweathermap.org/img/wn/${icon}@2x.png`;
 }
 
-// Function to get user's location and initialize weather data
+// Get user's location and initialize weather data
 function initializeWeather() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                getCurrentWeather(lat, lon); // Fetch and display current weather data
-                getThreeHourForecast(lat, lon); // Fetch and display 3-hour forecast data
+                const { latitude: lat, longitude: lon } = position.coords;
+                getCurrentWeather(lat, lon);
+                getThreeHourForecast(lat, lon);
                 document.getElementById('coordinates').textContent = `Coordinates: ${lat.toFixed(4)}N, ${lon.toFixed(4)}E`;
             },
-            (error) => {
-                console.error('Error fetching location:', error.message);
-                alert('Failed to get your location. Using default location for weather data.');
-                // If location access is denied or unavailable, use a default location
-                const defaultLat = 10.8505; // Default latitude for Asia/Kolkata
-                const defaultLon = 76.2711; // Default longitude for Asia/Kolkata
+            () => {
+                const defaultLat = 10.8505; // Default coordinates
+                const defaultLon = 76.2711;
                 getCurrentWeather(defaultLat, defaultLon);
                 getThreeHourForecast(defaultLat, defaultLon);
                 document.getElementById('coordinates').textContent = `Coordinates: ${defaultLat}N, ${defaultLon}E`;
             }
         );
     } else {
-        // Geolocation is not supported, use a default location
-        console.error('Geolocation is not supported by this browser.');
-        alert('Geolocation is not supported by your browser. Using default location.');
         const defaultLat = 10.8505;
         const defaultLon = 76.2711;
         getCurrentWeather(defaultLat, defaultLon);
@@ -211,5 +164,4 @@ function initializeWeather() {
     }
 }
 
-// Initialize weather data on page load
-initializeWeather();
+initializeWeather(); // Initialize on page load
