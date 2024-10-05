@@ -3,6 +3,9 @@ const API_KEY = 'b1874e8463abeeb77801729dc9ce5eac';
 const CURRENT_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
+// URL for wind layer (example using OpenWeatherMap wind_new layer)
+const windLayerUrl = `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`;
+
 // Initialize Leaflet Map
 let map;
 function initializeMap(lat, lon) {
@@ -10,9 +13,17 @@ function initializeMap(lat, lon) {
         map.setView([lat, lon], 12);
     } else {
         map = L.map('map').setView([lat, lon], 12);
+        
+        // Add OpenStreetMap tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Add wind_nw layer to the map
+        L.tileLayer(windLayerUrl, {
+            opacity: 0.5, // Adjust transparency as needed
+            attribution: '© OpenWeatherMap'
         }).addTo(map);
     }
 }
@@ -33,6 +44,18 @@ async function getCurrentWeather(lat, lon) {
         alert('Failed to fetch current weather data. Please check the console for more details.');
     }
 }
+
+// Add event listener to trigger search on pressing "Enter"
+document.getElementById('location-input').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        const city = document.getElementById('location-input').value.trim();
+        if (city) {
+            getWeatherByCity(city); // Fetch weather data based on city name
+        } else {
+            alert('Please enter a valid city name.');
+        }
+    }
+});
 
 // Function to get weather data by city name
 async function getWeatherByCity(city) {
@@ -56,7 +79,6 @@ async function getWeatherByCity(city) {
 
 // Function to initialize map on load with default coordinates
 initializeMap(14.6604, 121.1171); // Coordinates for initial view (e.g., Marikina)
-
 
 // Function to get 3-hour forecast data by city name
 async function getThreeHourForecastByCity(city) {
@@ -149,8 +171,6 @@ function displayThreeHourForecast(data) {
         forecastContainer.appendChild(forecastElement);
     });
 }
-
-
 
 // Get the weather icon URL
 function getWeatherIcon(icon) {

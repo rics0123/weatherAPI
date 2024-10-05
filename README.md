@@ -1,46 +1,47 @@
-Features:
-Displays the current weather data including temperature, humidity, wind speed, and weather description.
-Shows the 3-hour weather forecast for the next several days.
-Auto-detects user's current location using geolocation and displays weather information for that location.
-Fallback to a default location if geolocation is not supported or denied by the user.
-Simple and responsive UI design.
+# Weather Forecast with Map Integration
 
-Prerequisites:
-An active OpenWeatherMap API key.
-Basic knowledge of HTML, CSS, and JavaScript.
+This is a simple weather forecast web application that integrates OpenWeatherMap and OpenStreetMap to display current weather data and a 3-hour forecast for a given city. The application includes interactive map features and provides detailed weather information for user-selected locations.
 
-Project Structure:
-index.html: The main HTML file containing the structure of the application.
-script.js: JavaScript file that handles API calls, geolocation, and dynamic content updates.
-style.css: CSS file for styling the application.
+## Features
 
-Setup:
-Clone the repository or download the project files.
+- **Search Weather by City**: Enter a city name to get the current weather and a 3-hour forecast.
+- **Interactive Map**: Displays the location on the map with temperature overlay using OpenStreetMap and Leaflet.
+- **3-Hour Weather Forecast**: Shows a 3-hour weather forecast for the selected city, including temperature, humidity, wind speed, and more.
+- **User Location Detection**: Automatically detects the user's location and displays the current weather and forecast for that location.
 
-Open index.html in your favorite text editor.
+## Technologies Used
 
-Replace the placeholder API key in script.js with your own OpenWeatherMap API key:
+- **HTML/CSS**: For the basic structure and styling of the web page.
+- **JavaScript**: For the application logic and API interaction.
+- **OpenWeatherMap API**: Provides current weather data and forecast.
+- **Leaflet.js**: For map integration using OpenStreetMap.
 
-const API_KEY = APIKey
-Open index.html in a web browser. Allow location access if prompted to see the weather data for your current location.
+## Getting Started
 
-Usage:
-Launch the application by opening index.html in any modern web browser.
-View current weather information in the Location section.
-See the 3-hour forecast for the next few days in the 3-Hour Forecast section.
-If geolocation is not enabled, the application will display weather information for the default location set in the script.js file.
-Integrating Additional APIs
+### Prerequisites
 
-2. Country Information API
-To display more information about the user's country, such as population or region, integrate the REST Countries API.
+You need to have a modern web browser with JavaScript enabled.
 
-Use the getCountryInfo function to fetch and display country-specific data.
+### Setup
 
-Known Issues:
-Some browsers may block the geolocation API due to security settings or if the page is served over HTTP instead of HTTPS.
-The app defaults to a predefined location if geolocation is denied or not supported.
+1. Clone or download the repository.
+2. Make sure you have the following files in the project folder:
+    - `index.html`
+    - `script.js`
+    - `style.css`
+3. Open the `index.html` file in a web browser to run the application.
 
-Future Enhancements:
-Country Flag Integration: Display country flags using services like Flagpedia.
-Currency Conversion: Add currency exchange rates based on the user's location.
-Air Quality Data: Include AQI and pollution levels using the IQAir API.
+### Usage
+
+1. Enter a city name in the input field and either press "Enter" or click on the "Search" button to view the weather details.
+2. The map will update to show the location of the city, and the weather data will be displayed below.
+3. If no city is entered, the application will use a default location for initial display.
+
+## Customization
+
+- **Change API Key**: Update the `API_KEY` constant in the `script.js` file with your own OpenWeatherMap API key.
+- **Initial Map Location**: Modify the coordinates in the `initializeMap` function in `script.js` to change the default map location.
+
+## Keyboard Support
+
+- **Enter Key**: Users can press the "Enter" key after typing in the city name to trigger the search.
