@@ -1,18 +1,40 @@
 const API_KEY = 'b1874e8463abeeb77801729dc9ce5eac';
 const CURRENT_WEATHER_URL = 'https://api.openweathermap.org/data/2.5/weather';
 const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
-const windLayerUrl = `https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid=${API_KEY}`; // Wind pressure overlay
+const windLayerUrl = `https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=${API_KEY}`; // Wind pressure overlay
 
-// Initialize Leaflet map
+// Initialize Leaflet map with multiple markers
 let map;
+let markers = []; // Store all markers
+
 function initializeMap(lat, lon) {
-    if (map) {
-        map.setView([lat, lon], 12);
-    } else {
+    if (!map) {
+        // Create the map only if it does not exist
         map = L.map('map').setView([lat, lon], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-        L.tileLayer(windLayerUrl, { opacity: 0.5, attribution: '© OpenWeatherMap' }).addTo(map);
+        
+        // Base map layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        
+        // Wind pressure overlay layer
+        const windLayer = L.tileLayer(windLayerUrl, {
+            maxZoom: 19,
+            opacity: 0.5,
+            attribution: '© OpenWeatherMap'
+        }).addTo(map);
+    } else {
+        // Use flyTo to animate to the new location, ensuring it moves even for short distances
+        map.flyTo([lat, lon], 12, { duration: 1 });
     }
+
+    // Create a new marker for the location and add it to the map
+    const newMarker = L.marker([lat, lon]).addTo(map);
+    newMarker.bindPopup(`<b>Location:</b> ${lat.toFixed(4)}N, ${lon.toFixed(4)}E`).openPopup();
+
+    // Add the new marker to the markers array to keep it on the map
+    markers.push(newMarker);
 }
 
 // Fetch current weather data
@@ -64,13 +86,22 @@ async function getThreeHourForecastByCity(city) {
     }
 }
 
-// Trigger search on Enter key press
-document.getElementById('location-input').addEventListener('keydown', (event) => {
+// Trigger search on Enter key press and on button click
+const locationInput = document.getElementById('location-input');
+const searchButton = document.getElementById('search-btn');
+
+locationInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
-        const city = document.getElementById('location-input').value.trim();
+        const city = locationInput.value.trim();
         if (city) getWeatherByCity(city);
         else alert('Please enter a valid city name.');
     }
+});
+
+searchButton.addEventListener('click', () => {
+    const city = locationInput.value.trim();
+    if (city) getWeatherByCity(city);
+    else alert('Please enter a valid city name.');
 });
 
 // Fetch and display 3-hour forecast data
@@ -87,7 +118,7 @@ async function getThreeHourForecast(lat, lon) {
     }
 }
 
-// Display current weather details
+// Display current weather details with country flag integration
 function displayCurrentWeather(data) {
     const cityName = data.name;
     const countryName = data.sys.country;
@@ -97,8 +128,11 @@ function displayCurrentWeather(data) {
     const windSpeed = data.wind.speed;
     const icon = getWeatherIcon(data.weather[0].icon);
 
+    // Integrate country flag using flagcdn
+    const countryFlagUrl = `https://flagcdn.com/w320/${countryName.toLowerCase()}.png`;
+
     document.getElementById('location').innerHTML = `
-        <strong>${cityName}, ${countryName}</strong><br>
+        <strong>${cityName}, ${countryName} <img src="${countryFlagUrl}" alt="${countryName} flag" style="width: 30px; vertical-align: middle;"></strong><br>
         <img src="${icon}" alt="Weather Icon" style="vertical-align: middle; width: 50px;">
         <p>Temperature: ${currentTemp}°C</p>
         <p>Weather: ${weatherDescription}</p>
